@@ -1,0 +1,82 @@
+%% HEAT EQUATION 
+
+clear; clc; close all
+
+
+%%  VARIABLES 
+
+x0      = 0;
+x1      = 1;
+numX    = 100; 
+dX      = (x1 - x0)/(numX-1);
+x       = x0:dX:x1;
+
+y0      = 0;
+y1      = 1;
+numY    = 100; 
+dY      = (y1 - y0)/(numY-1);
+y       = y0:dY:y1;
+
+numT    = 5000;
+time    = .1;
+dT      = time/(numT-1);
+
+%% INITIAL CONDITIONS
+Umax = 2;
+X = .5;
+Y = .5;
+R = .2;
+K = 1;
+
+U = Umax*(exp(-((x - X)/R).^2)'* (exp(-((y - Y)/R).^2)));
+
+%% EXPLICIT SOLUTION
+
+% rx      = K*(dT/dX^2);
+% e       = ones(numX,1);
+% explX   = spdiags([rx.*e, (1-2*rx).*e, rx.*e], -1:1, numX, numX);  
+% 
+% ry      = K*(dT/dY^2);
+% e       = ones(numY,1);
+% explY = spdiags([ry.*e, (-2*ry).*e, ry.*e], -1:1, numY, numY);  
+% 
+% 
+% for i = 1:numT
+%    U = explX*U + U*explY;
+%    
+%    % Boundrary Condition
+%    U(1,:)   = 0;
+%    U(end,:) = 0;
+%    U(:,1)   = 0;
+%    U(:,end) = 0; 
+%    
+%    surf(U, 'EdgeColor', 'none');
+%    axis([0 numX 0 numY 0 Umax]);
+%    pause(0.001);
+% end
+
+%% IMPLICIT SOLUTION
+
+rx      = K*(dT/dX^2);
+e       = ones(numX,1);
+explX   = spdiags([-rx.*e, (2+2*rx).*e, -rx.*e], -1:1, numX, numX);  
+
+ry      = K*(dT/dY^2);
+e       = ones(numY,1);
+explY = spdiags([-ry.*e, (2+2*ry).*e, -ry.*e], -1:1, numY, numY);  
+
+
+for i = 1:numT
+   U = inv(explX)*U + U*inv(explY);
+   
+   % Boundrary Condition
+   U(1,:)   = 0;
+   U(end,:) = 0;
+   U(:,1)   = 0;
+   U(:,end) = 0; 
+   
+%    imagesc(U)
+   surf(U, 'EdgeColor', 'none');
+   axis([0 numX 0 numY 0 Umax]);
+   pause(0.001);
+end

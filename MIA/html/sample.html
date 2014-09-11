@@ -1,0 +1,195 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>sample</title><meta name="generator" content="MATLAB 8.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-03-11"><meta name="DC.source" content="sample.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">RADON TRANSFORM OF AN IMAGE</a></li></ul></div><pre class="codeinput">clear; clc; close <span class="string">all</span>
+</pre><h2>RADON TRANSFORM OF AN IMAGE<a name="2"></a></h2><pre class="codeinput">IMG = ones(100,100);        <span class="comment">%matrix of ones</span>
+a = zeros(50,50);           <span class="comment">%matrix of zeros</span>
+IMG(25:74,25:74) = a;       <span class="comment">%box of zeros</span>
+
+THETA = 1:180;
+
+<span class="comment">% pad the image with zeros so we don't lose anything when we rotate.</span>
+[iLength, iWidth] = size(IMG);              <span class="comment">%dimensions of image</span>
+iDiag = sqrt(iLength^2 + iWidth^2);         <span class="comment">%diagonal of image</span>
+LengthPad = ceil(iDiag - iLength) + 2;      <span class="comment">%padding of the length</span>
+WidthPad = ceil(iDiag - iWidth) + 2;        <span class="comment">%padding of the width</span>
+<span class="comment">%initialize empty matrix to the size of the paddign matrix</span>
+<span class="comment">%padding matrix is square, with side the diagonal of the image</span>
+padIMG = zeros(iLength+LengthPad, iWidth+WidthPad);
+<span class="comment">%place image in the center of the padding matrix</span>
+padIMG(ceil(LengthPad/2):(ceil(LengthPad/2)+iLength-1), <span class="keyword">...</span>
+    ceil(WidthPad/2):(ceil(WidthPad/2)+iWidth-1)) = IMG;
+
+imagesc(IMG);
+title(<span class="string">'Image'</span>);
+figure;
+imagesc(padIMG);
+title(<span class="string">'Padded Image'</span>);
+
+
+<span class="comment">% loop over the number of angles, rotate 90-theta (because we can easily sum</span>
+<span class="comment">% if we look at stuff from the top), and then add up.  Don't perform any</span>
+<span class="comment">% interpolation on the rotating.</span>
+
+<span class="comment">%side length of paddding matrix, diagonal of image</span>
+n = size(padIMG,1);
+<span class="comment">%sample points of projection</span>
+x = linspace(-1,1,n);
+<span class="comment">%grid of query points for interpolation</span>
+[X1,Y1] = meshgrid(x,x);
+
+<span class="comment">%number of angle rotations</span>
+n = length(THETA);
+<span class="comment">%initialize array for radon transform of each angle</span>
+PR = zeros(size(padIMG,2), n);
+<span class="comment">%interate through all angles</span>
+<span class="keyword">for</span> i = 1:n
+    <span class="comment">%convert from degrees to radians</span>
+    theta = (90-THETA(i))*pi/180;
+    <span class="comment">%rotated coordinate system</span>
+    P = cos(theta)*X1 + -sin(theta)*Y1;     <span class="comment">%rotated x</span>
+    Q = sin(theta)*X1 + cos(theta)*Y1;      <span class="comment">%rotated y</span>
+    <span class="comment">% interpolate</span>
+    tmpimg = interp2(X1,Y1,padIMG,P,Q);     <span class="comment">%linear interpolation</span>
+                                            <span class="comment">%onto rotated coordinates</span>
+    tmpimg(isnan(tmpimg)) = 0;              <span class="comment">%zero NaN</span>
+    <span class="comment">% sum</span>
+    PR(:,i) = (sum(tmpimg))';               <span class="comment">%line intergral</span>
+                                            <span class="comment">%2.28 in the book</span>
+<span class="keyword">end</span>
+figure;
+imagesc(x,THETA,PR');
+
+title(<span class="string">'Radon Traform'</span>);
+</pre><img vspace="5" hspace="5" src="sample_01.png" alt=""> <img vspace="5" hspace="5" src="sample_02.png" alt=""> <img vspace="5" hspace="5" src="sample_03.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2013a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+
+clear; clc; close all
+
+%% RADON TRANSFORM OF AN IMAGE
+
+IMG = ones(100,100);        %matrix of ones           
+a = zeros(50,50);           %matrix of zeros
+IMG(25:74,25:74) = a;       %box of zeros 
+
+THETA = 1:180;
+
+% pad the image with zeros so we don't lose anything when we rotate.
+[iLength, iWidth] = size(IMG);              %dimensions of image
+iDiag = sqrt(iLength^2 + iWidth^2);         %diagonal of image
+LengthPad = ceil(iDiag - iLength) + 2;      %padding of the length
+WidthPad = ceil(iDiag - iWidth) + 2;        %padding of the width
+%initialize empty matrix to the size of the paddign matrix
+%padding matrix is square, with side the diagonal of the image
+padIMG = zeros(iLength+LengthPad, iWidth+WidthPad);
+%place image in the center of the padding matrix
+padIMG(ceil(LengthPad/2):(ceil(LengthPad/2)+iLength-1), ...
+    ceil(WidthPad/2):(ceil(WidthPad/2)+iWidth-1)) = IMG;
+
+imagesc(IMG);
+title('Image');
+figure;
+imagesc(padIMG);
+title('Padded Image');
+
+
+% loop over the number of angles, rotate 90-theta (because we can easily sum
+% if we look at stuff from the top), and then add up.  Don't perform any
+% interpolation on the rotating.
+
+%side length of paddding matrix, diagonal of image
+n = size(padIMG,1);
+%sample points of projection
+x = linspace(-1,1,n);
+%grid of query points for interpolation
+[X1,Y1] = meshgrid(x,x);
+
+%number of angle rotations
+n = length(THETA);
+%initialize array for radon transform of each angle
+PR = zeros(size(padIMG,2), n);
+%interate through all angles
+for i = 1:n
+    %convert from degrees to radians
+    theta = (90-THETA(i))*pi/180;
+    %rotated coordinate system
+    P = cos(theta)*X1 + -sin(theta)*Y1;     %rotated x 
+    Q = sin(theta)*X1 + cos(theta)*Y1;      %rotated y 
+    % interpolate
+    tmpimg = interp2(X1,Y1,padIMG,P,Q);     %linear interpolation 
+                                            %onto rotated coordinates
+    tmpimg(isnan(tmpimg)) = 0;              %zero NaN
+    % sum
+    PR(:,i) = (sum(tmpimg))';               %line intergral
+                                            %2.28 in the book
+end
+figure;
+imagesc(x,THETA,PR');
+
+title('Radon Traform');
+##### SOURCE END #####
+--></body></html>
